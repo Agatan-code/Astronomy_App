@@ -1,0 +1,61 @@
+<Doctype html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width", initial-scale="1.0">
+        <meta name="author", content="Agatan Partheeban">
+        <meta name="description", content="Astronomy App">
+
+        <link rel="stylesheet", href="style.css">
+
+        <title>
+            Astronomy App
+        </title>
+    
+    </head>
+
+    <body>
+
+        <header class="main_title">
+            <h1 class="title">THE ASTRONOMY APP</h1>
+        </header>
+
+        <div class="display">
+
+            <form id="showObject" class="search-bar">
+                <input type="text" name="show_nameOfObject" placeholder="Search M31, NGC 224, Andromeda...">
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="filters" id="filters">
+                <button class="chip active" data-type="all">All types</button>
+                <button class="chip" data-type="galaxies">Galaxies</button>
+                <button class="chip" data-type="globular_cluster">Globular clusters</button>
+                <button class="chip" data-type="emission_nebula">Emission nebulae</button>
+                <button class="chip" data-type="open_cluster">Open clusters</button>
+                <button class="chip" data-type="other">Other</button>
+            </div>
+
+            <div class="card-grid" id="cardGrid">
+                <!-- app.js will inject one .card div per object here -->
+            </div>
+
+        </div>
+
+        <div class="modal" id="detailModal" hidden>
+            <div class="modal-content" id="modalContent">
+                <!-- app.js fills this in when a card is clicked -->
+                <button class="close-btn" id="closeModal">Close</button>
+            </div>
+        </div>
+
+
+
+        <script src="app.js"></script>
+        
+    </body>
+
+</html>

@@ -1,0 +1,88 @@
+.search-bar {
+    display: flex;
+    gap: 8px;
+    margin: 1rem 0;
+}
+.search-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.search-bar button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+}
+.chip {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid #ccc;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+.chip.active {
+    background: #1d1d1d;
+    color: white;
+    border-color: #1d1d1d;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+    background: #eee;
+}
+.card .card-body {
+    padding: 10px 12px;
+}
+.card .card-body p:first-child {
+    font-weight: 600;
+    margin: 0 0 2px;
+}
+.card .card-body p:last-child {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal[hidden] {
+    display: none;
+}
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 90%;
+}

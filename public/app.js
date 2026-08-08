@@ -104,6 +104,8 @@ filter_options.addEventListener("click", async (e) => {
     if (selectedType === "all") {
         // If selectedType is "all", the URL becomes /api/objects.
         url = "/api/objects";
+
+
     }
     else {
         // Otherwise, it builds a URL like /api/objects/galaxies.
@@ -116,6 +118,8 @@ filter_options.addEventListener("click", async (e) => {
     // Converts the server response into a JavaScript object/array.
     // This is the data for the selected category.
     const filteredObjects = await response.json();
+    // Updates the in-memory copy of allObjects to only include the filtered data.
+    allObjects = filteredObjects;
     // Passes the filtered data into the renderCards function.
     // That function updates the page to show only the matching cards.
     renderCards(filteredObjects);

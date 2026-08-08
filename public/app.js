@@ -62,6 +62,8 @@ printObject.addEventListener("submit", async (e) => {
 });
 */
 
+// This is v_0_0_2
+
 // ============================ CARD GRID ============================
 const cardGrid = document.getElementById("cardGrid");
 const searchForm = document.getElementById("showObject");

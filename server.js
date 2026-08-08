@@ -80,10 +80,19 @@ app.get("/api/objects", (req, res) => {
 
 app.get("/api/objects/:type", (req, res) => {
     try {
-       const { type } = req.params;
-       const stmt = db.prepare(`SELECT * FROM ${type}`);
-       const results = stmt.all();
-       res.status(200).json(results);    
+        const { type } = req.params;
+        
+        if (type === "other") {
+            // If the type is "other", we need to query the "other" table directly.
+            const stmt = db.prepare(`SELECT * FROM other`);
+            const results = stmt.all();
+            res.status(200).json(results);
+            return;
+        }
+        // For other types, we can use the ALL_OBJECTS_QUERY to filter by object_type.
+        const stmt = db.prepare(`SELECT * FROM (${ALL_OBJECTS_QUERY}) WHERE object_type = ?`);
+        const results = stmt.all(type);
+        res.status(200).json(results);    
     }
     catch (err) {
         console.error(err);

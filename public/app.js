@@ -7,63 +7,41 @@ const searchForm = document.getElementById("showObject");
 const filter_options = document.getElementById("filters");  
 
 // In memory copy of the whole catalog.
-let allObjects = [];
+let masterObjects = [];
+let temporaryObjects = [];
+
+// Track current selections
+let currentType = "all";
+let currentQuery = "";
 
 // 1. On page load, fetch everything and render cards
 async function loadAllObjects() {
     const response = await fetch("/api/objects");
-    allObjects = await response.json();
-    renderCards(allObjects);
+    masterObjects = await response.json();
+    // Initially, temporaryObjects is the same as masterObjects.
+    temporaryObjects = masterObjects;
+    renderCards(masterObjects);
 }
 
 filter_options.addEventListener("click", async (e) => {
-    // The program looks for the closest ancestor of the clicked element that has the class "chip".
+    // Use event delegation to handle clicks on any of the filter buttons
     const button = e.target.closest(".chip");
-    // If nothing is found, the code stops executing and returns early. This prevents errors from trying to access properties of undefined.
+    // If the click wasn't on a button, do nothing
     if (!button) return;
 
-    // This selects all elements with the class chip.
-    // forEach runs the same code for each one.
+    // Remove the "active" class from all buttons, then add it to the clicked button
     document.querySelectorAll(".chip").forEach((chip) => {
-        // This removes the active class from every chip button.
-        // That makes sure only one button is highlighted at a time.
+        // Remove the "active" class from each chip
         chip.classList.remove("active");
     });
-    // Adds the active class to the button that was clicked.
-    // This visually marks it as the selected filter.
+    // Add the "active" class to the clicked button
     button.classList.add("active");
 
-    // Reads the value stored in the button’s data-type attribute.
-    const selectedType = button.dataset.type;
-
-    let url;
-
-    // Starts building the API URL based on which filter button was clicked.
-    if (selectedType === "all") {
-        // If selectedType is "all", the URL becomes /api/objects.
-        url = "/api/objects";
-
-
-    }
-    else {
-        // Otherwise, it builds a URL like /api/objects/galaxies.
-        url = `/api/objects/${selectedType}`;
-    }
-
-    // Sends a request to the server using the URL.
-    // await pauses until the server responds.
-    const response = await fetch(url);
-    // Converts the server response into a JavaScript object/array.
-    // This is the data for the selected category.
-    const filteredObjects = await response.json();
-    // Updates the in-memory copy of allObjects to only include the filtered data.
-    allObjects = filteredObjects;
-    // Passes the filtered data into the renderCards function.
-    // That function updates the page to show only the matching cards.
-    renderCards(filteredObjects);
+    // Update the current type
+    currentType = button.dataset.type;
+    // After changing the currentType, apply filters and search to update the displayed cards
+    applyFiltersAndSearch();
 });
-
-
 
 // 2. Turn an array of objects into card HTML and inject into #cardGrid
 function renderCards(objects) {
@@ -85,25 +63,45 @@ function renderCards(objects) {
 // 3. Search -- filters the in-memory array, no server round-trip
 searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const query = searchForm.show_nameOfObject.value.trim().toLowerCase();
+    // Get the search query from the input field, trim whitespace, and convert to lowercase
+    currentQuery = searchForm.show_nameOfObject.value.trim().toLowerCase();
+    // Apply the filters and search to update the displayed cards
+    applyFiltersAndSearch();
+});
 
-    if (query === "") {
-        renderCards(allObjects);
-        return;
+// Apply filters and search to the in-memory array of objects, then render the results
+function applyFiltersAndSearch() {
+    // Start with the full catalog in memory
+    let results = masterObjects;
+
+    if (currentType === "other") {
+        // If the type is "other", we want to exclude all named types from the results
+        const namedTypes = ["galaxy", "globular_cluster", "emission_nebula", "open_cluster", "planetary_nebula", "reflection_nebula"];
+        // Filter the results to only include objects whose object_type is not in the namedTypes array
+        results = results.filter(obj => !namedTypes.includes(obj.object_type));
     }
 
-    /*
-    .filter() is a built in method that goes through every item in allObjects, 
-    runs the function on each, and builds a new array containing only the items where
-    the function returned true.
-    */
-    const matches = allObjects.filter(obj =>
-        obj.messier?.toLowerCase().includes(query) ||
-        obj.ngc?.toLowerCase().includes(query)
-    );
+    // Apply type filter first, unless "all" is selected
+    else if (currentType !== "all") {
+        // Filter the results to only include objects of the selected type
+        results = results.filter(obj => obj.object_type === currentType);
+    }
 
-    renderCards(matches);
-});
+    // Then apply the search query filter, if a query is present
+    if (currentQuery !== "") {
+        // Filter the results to only include objects whose messier or ngc properties match the search query
+        results = results.filter(obj =>
+            // Use optional chaining (?.) to safely access messier and ngc properties, and convert them to lowercase for case-insensitive comparison
+            obj.messier?.toLowerCase().includes(currentQuery) ||
+            obj.ngc?.toLowerCase().includes(currentQuery)
+        );
+    }
+
+    // Update the in-memory copy of temporaryObjects to only include the filtered results
+    temporaryObjects = results;
+    // Pass the filtered results into renderCards to update the page
+    renderCards(results);
+}
 
 // 4. Event delegation -- one listener on cardGrid handles clicks on any card
 cardGrid.addEventListener("click", (e) => {
@@ -111,7 +109,8 @@ cardGrid.addEventListener("click", (e) => {
     if (!card) return;
 
     const id = card.dataset.id;
-    const obj = allObjects.find(o => String(o.id) === id);
+    const type = card.dataset.type;
+    const obj = temporaryObjects.find(o => String(o.id) === id && o.object_type === type);
     if (!obj) return;
 
     document.getElementById("modalContent").innerHTML = `

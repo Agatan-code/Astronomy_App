@@ -7,7 +7,7 @@ const db = new Database('./astronomydb.db');
 // =============================================
 const query = `
 
-    SELECT * FROM galaxies WHERE messier = 'M109';
+    YOUR SQL GOES HERE
 
 `;
 

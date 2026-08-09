@@ -1,4 +1,4 @@
-// This is v_0_0_2
+// This is v_0_0_3
 
 // ============================ CARD GRID ============================
 const cardGrid = document.getElementById("cardGrid");

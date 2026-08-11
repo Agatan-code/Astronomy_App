@@ -91,6 +91,11 @@
     padding: 4px 8px;
     border-radius: 4px;
     border: 1px solid #070000;
-    background: powderblue;
+    background: #fcfcfc;
     cursor: pointer;
+}
+.main-buttons.active {
+    background: rgb(0, 61, 70);
+    color: white;
+    border-color: #1d1d1d;
 }

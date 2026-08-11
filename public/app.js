@@ -1,20 +1,23 @@
 // This is v_0_0_3
 
 // ============================ MENU BUTTONS ============================
-const display_button = document.getElementById("display_button");
-const display_menu = document.getElementById("display");
+const menu_buttons = document.getElementById("menu_buttons");
 
-const import_button = document.getElementById("import_button");
-const import_menu = document.getElementById("import");
+menu_buttons.addEventListener("click", async (e) => {
+    const button = e.target.closest(".main-buttons");
+    if (!button) return;
 
-display_button.addEventListener("click", async (e) => {
-    import_menu.setAttribute("hidden", "true");
-    display_menu.removeAttribute("hidden");
-});
+    document.querySelectorAll(".main-buttons").forEach((button) => {
+        button.classList.remove("active");
 
-import_button.addEventListener("click", async (e) => {
-    display_menu.setAttribute("hidden", "true");
-    import_menu.removeAttribute("hidden");
+        const menu_type = button.dataset.type;
+        document.getElementById(menu_type).setAttribute("hidden", "true");
+    });
+
+    button.classList.add("active");
+
+    const menu_type = button.dataset.type;
+    document.getElementById(menu_type).removeAttribute("hidden");
 });
 
 

@@ -78,6 +78,8 @@ app.get("/api/objects", (req, res) => {
     }
 });
 
+// This is commented out because the filtering is now done on the client side, but it could be re-enabled if needed for server-side filtering.
+/*
 app.get("/api/objects/:type", (req, res) => {
     try {
         const { type } = req.params;
@@ -99,6 +101,7 @@ app.get("/api/objects/:type", (req, res) => {
         res.status(500).json({ error: err.message });    
     }
 });
+*/
 
 // Search by name — powers the search form
 app.get("/api/object/:nameOfObject", (req, res) => {

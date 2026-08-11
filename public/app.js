@@ -1,6 +1,24 @@
 // This is v_0_0_3
 
-// ============================ CARD GRID ============================
+// ============================ MENU BUTTONS ============================
+const display_button = document.getElementById("display_button");
+const display_menu = document.getElementById("display");
+
+const import_button = document.getElementById("import_button");
+const import_menu = document.getElementById("import");
+
+display_button.addEventListener("click", async (e) => {
+    import_menu.setAttribute("hidden", "true");
+    display_menu.removeAttribute("hidden");
+});
+
+import_button.addEventListener("click", async (e) => {
+    display_menu.setAttribute("hidden", "true");
+    import_menu.removeAttribute("hidden");
+});
+
+
+// ============================ DISPLAY ============================
 const cardGrid = document.getElementById("cardGrid");
 const searchForm = document.getElementById("showObject");
 

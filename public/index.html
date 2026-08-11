@@ -23,7 +23,12 @@
             <h1 class="title">THE ASTRONOMY APP</h1>
         </header>
 
-        <div class="display">
+
+        <button type="button" id="display_button" class="main-buttons">Display</button>
+        <button type="button" id="import_button" class="main-buttons">Import</button>
+
+
+        <div id="display" class="display">
 
             <form id="showObject" class="search-bar">
                 <input type="text" name="show_nameOfObject" placeholder="Search M31, NGC 224, Andromeda...">
@@ -52,6 +57,10 @@
             </div>
         </div>
 
+
+        <div id="import" class="import" hidden>
+            <h3>HELLO WORLD</h3>
+        </div>
 
 
         <script src="app.js"></script>

@@ -86,3 +86,11 @@
     max-width: 400px;
     width: 90%;
 }
+
+.main-buttons {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #070000;
+    background: powderblue;
+    cursor: pointer;
+}

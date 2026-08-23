@@ -95,7 +95,21 @@
     cursor: pointer;
 }
 .main-buttons.active {
+    padding: 3px 6px;
     background: rgb(0, 61, 70);
+    color: white;
+    border-color: #1d1d1d;
+}
+.submit_button {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid #ccc;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+.submit_button.clicked {
+    background: #1d1d1d;
     color: white;
     border-color: #1d1d1d;
 }

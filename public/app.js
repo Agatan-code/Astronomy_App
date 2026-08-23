@@ -21,7 +21,29 @@ menu_buttons.addEventListener("click", async (e) => {
 });
 
 
+
 // =========================== IMPORT =============================
+const user_input = document.getElementById("photoInput");
+
+user_input_button.addEventListener("click", async (e) => {
+    const input = user_input.files[0];
+
+    if (!input) return;
+
+    console.log("User input file:", input);
+
+    async function InputToServer() {
+        const formData = new FormData();
+        formData.append("image", input);
+        const response = await fetch("/api/objectInfo", {
+            method: "POST",
+            body: formData
+        });
+        const data = await response.json();
+        console.log(data);
+    }
+    await InputToServer();
+});
 
 
 

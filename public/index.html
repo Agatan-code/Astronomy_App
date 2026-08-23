@@ -1,4 +1,4 @@
-<Doctype html>
+<!DOCTYPE html>
 
 <html lang="en">
 
@@ -61,7 +61,46 @@
 
 
         <div id="import" class="import" hidden>
-            
+
+            <div class="photo_import">
+
+                <h2>Import Picture</h2>
+                <div class="image">
+
+                    <img id="photoPlaceholder" src="photo_place_holder.png" >
+                    <input id="photoInput" type="file" accept="image/jpeg, image/png, .fits, .fit">
+                    <script>
+                        const photoInput = document.getElementById('photoInput');
+                        const photoPlaceholder = document.getElementById('photoPlaceholder');
+
+                        photoInput.addEventListener('change', function() {
+                            const file = this.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    photoPlaceholder.src = e.target.result;
+                                }
+                                reader.readAsDataURL(file);
+                            }
+                        });
+                    </script>
+
+                    <button type="submit" id="user_input_submit" class="submit_button">Submit</button>
+                    <script>
+                        const user_input_button = document.getElementById("user_input_submit")
+
+                        user_input_button.addEventListener('click', function() {
+                            user_input_button.classList.add("clicked");
+                            setTimeout(function() {
+                                user_input_button.classList.remove("clicked");
+                            }, 225)
+                        });
+                    </script>
+                    
+                </div>
+
+            </div>
+
         </div>
 
 

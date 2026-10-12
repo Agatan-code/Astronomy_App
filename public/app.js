@@ -24,6 +24,7 @@ menu_buttons.addEventListener("click", async (e) => {
 
 // =========================== IMPORT =============================
 const user_input = document.getElementById("photoInput");
+const annotatedImageLink = document.getElementById("annotatedImageLink");
 
 user_input_button.addEventListener("click", async (e) => {
     const input = user_input.files[0];
@@ -39,7 +40,15 @@ user_input_button.addEventListener("click", async (e) => {
             method: "POST",
             body: formData
         });
+
         const data = await response.json();
+        
+        if (!response.ok) { 
+            throw new Error(data.error || "Plate solving failed");
+        }
+
+        annotatedImageLink.src = data.annotatedImage;
+        annotatedImageLink.hidden = false;
         console.log(data);
     }
     await InputToServer();

@@ -1,225 +1,545 @@
-.search-bar {
-    display: flex;
-    gap: 8px;
-    margin: 1rem 0;
-}
-.search-bar input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-}
-.search-bar button {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: white;
-    cursor: pointer;
+/* ==========================================================================
+   THE ASTRONOMY APP — deep-space theme
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@600;700&display=swap');
+
+/* ------------------------- TOKENS ------------------------- */
+:root {
+  --space: #060a1c;          /* page background */
+  --deep: #0d1330;           /* raised surfaces */
+  --glass: rgba(14, 20, 48, 0.62);
+  --line: rgba(150, 170, 255, 0.16);
+  --line-strong: rgba(150, 170, 255, 0.38);
+  --star: #eef2ff;           /* main text */
+  --dim: #8f9bc6;            /* secondary text */
+  --ion: #7fd6ff;            /* primary accent (cool cyan) */
+  --nebula: #9a8bff;         /* secondary accent (violet) */
+  --ion-soft: rgba(127, 214, 255, 0.14);
+
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  --font-display: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
-.filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 1.5rem;
-}
-.chip {
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid #ccc;
-    background: white;
-    font-size: 13px;
-    cursor: pointer;
-}
-.chip.active {
-    background: #1d1d1d;
-    color: white;
-    border-color: #1d1d1d;
+/* ------------------------- BASE ------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html {
+  background-color: var(--space);
+  /* soft nebula glows, fixed so they stay put while you scroll */
+  background-image:
+    radial-gradient(ellipse 60% 45% at 85% 5%,  rgba(154, 139, 255, 0.20), transparent 70%),
+    radial-gradient(ellipse 55% 40% at 8% 35%,  rgba(127, 214, 255, 0.10), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 60% 100%, rgba(90, 70, 200, 0.18), transparent 70%);
+  background-attachment: fixed;
 }
 
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-}
-.card {
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-}
-.card img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-    display: block;
-    background: #eee;
-}
-.card .card-body {
-    padding: 10px 12px;
-}
-.card .card-body p:first-child {
-    font-weight: 600;
-    margin: 0 0 2px;
-}
-.card .card-body p:last-child {
-    font-size: 12px;
-    color: #666;
-    margin: 0;
+body {
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  max-width: 1120px;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--star);
+  -webkit-font-smoothing: antialiased;
 }
 
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Starfield (stars are generated and animated in app.js) */
+#sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
 }
-.modal[hidden] {
-    display: none;
-}
-.modal-content {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    max-width: 400px;
-    width: 90%;
+.star {
+  position: absolute;
+  border-radius: 50%;
 }
 
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ion);
+  outline-offset: 3px;
+}
+
+/* ------------------------- TITLE ------------------------- */
+.main_title {
+  position: relative;
+  text-align: center;
+  padding: 3.5rem 0 2.25rem;
+  --orbit-w: min(560px, 94%);
+  --orbit-h: 96px;
+  --orbit-half-time: 6s;                        /* one full orbit = 2x this */
+  --sine: cubic-bezier(0.37, 0, 0.63, 1);       /* sine-style easing makes the path round */
+}
+/* thin orbit line behind the title */
+.main_title::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--orbit-w);
+  height: var(--orbit-h);
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  pointer-events: none;
+}
+/* the planet */
+.main_title::after {
+  content: "";
+  position: absolute;
+  left: calc(50% + var(--orbit-w) / 2);
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;                    /* centers the dot on its position */
+  border-radius: 50%;
+  background: var(--ion);
+  box-shadow: 0 0 14px 2px rgba(127, 214, 255, 0.7);
+  pointer-events: none;
+  animation:
+    orbit-x     var(--orbit-half-time) var(--sine) infinite alternate,
+    orbit-y     var(--orbit-half-time) var(--sine) calc(var(--orbit-half-time) / -2) infinite alternate,
+    orbit-depth var(--orbit-half-time) var(--sine) calc(var(--orbit-half-time) / -2) infinite alternate;
+}
+@keyframes orbit-x {
+  from { left: calc(50% - var(--orbit-w) / 2); }
+  to   { left: calc(50% + var(--orbit-w) / 2); }
+}
+@keyframes orbit-y {
+  from { top: calc(50% - var(--orbit-h) / 2); }
+  to   { top: calc(50% + var(--orbit-h) / 2); }
+}
+/* back of the orbit = small and dim, front = bigger and bright */
+@keyframes orbit-depth {
+  from { opacity: 0.35; scale: 0.7; }
+  to   { opacity: 1;    scale: 1.2; }
+}
+.title {
+  position: relative;
+  font-size: clamp(1.9rem, 6vw, 3.4rem);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  color: var(--star);
+  text-shadow: 0 0 28px rgba(154, 139, 255, 0.55);
+}
+
+/* ------------------------- MAIN MENU ------------------------- */
+#menu_buttons {
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto 2rem;
+  padding: 5px;
+  gap: 4px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
 .main-buttons {
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #070000;
-    background: #fcfcfc;
-    cursor: pointer;
+  padding: 9px 24px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+.main-buttons:hover {
+  color: var(--star);
 }
 .main-buttons.active {
-    padding: 3px 6px;
-    background: rgb(0, 61, 70);
-    color: white;
-    border-color: #1d1d1d;
+  padding: 9px 24px; /* overrides the old 3px/6px so the pill doesn't jump */
+  color: var(--space);
+  background: var(--ion);
+  border-color: var(--ion);
+  box-shadow: 0 0 18px rgba(127, 214, 255, 0.35);
 }
+
+/* ------------------------- SEARCH BAR ------------------------- */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 1.25rem;
+}
+.search-bar input {
+  flex: 1;
+  padding: 13px 18px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--star);
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-bar input::placeholder {
+  color: var(--dim);
+}
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--ion);
+  box-shadow: 0 0 0 3px var(--ion-soft);
+}
+.search-bar button {
+  padding: 13px 26px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--space);
+  background: var(--ion);
+  border: 1px solid var(--ion);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.search-bar button:hover {
+  box-shadow: 0 0 20px rgba(127, 214, 255, 0.45);
+}
+.search-bar button:active {
+  transform: scale(0.97);
+}
+
+/* ------------------------- FILTER CHIPS ------------------------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.75rem;
+}
+.chip {
+  padding: 7px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.chip:hover {
+  color: var(--star);
+  border-color: var(--line-strong);
+}
+.chip.active {
+  color: var(--ion);
+  background: var(--ion-soft);
+  border-color: rgba(127, 214, 255, 0.55);
+}
+
+/* ------------------------- OBJECT CARDS ------------------------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  border-color: rgba(127, 214, 255, 0.5);
+  box-shadow: 0 0 26px rgba(127, 214, 255, 0.12);
+}
+.card img {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  background: var(--deep);
+}
+.card .card-body {
+  padding: 12px 14px 14px;
+}
+.card .card-body p:first-child {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--star);
+}
+.card .card-body p:last-child {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+/* ------------------------- DETAIL MODAL ------------------------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(3, 5, 16, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.modal[hidden] {
+  display: none;
+}
+.modal-content {
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  color: var(--star);
+  background: var(--deep);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 60px rgba(154, 139, 255, 0.25);
+}
+.modal-content img {
+  display: block;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-md);
+}
+.modal-content h2,
+.modal-content h3 {
+  margin-bottom: 0.5rem;
+}
+.modal-content p {
+  color: var(--dim);
+}
+.close-btn {
+  margin-top: 1.25rem;
+  padding: 9px 22px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--star);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.close-btn:hover {
+  background: var(--ion-soft);
+  border-color: var(--ion);
+}
+
+/* ------------------------- IMPORT SECTION ------------------------- */
+.photo_import {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1.75rem;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.photo_import h2 {
+  margin-bottom: 1.25rem;
+  font-size: 1.5rem;
+}
+.photo_import .image {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+#photoPlaceholder,
+#annotatedImageLink {
+  display: block;
+  width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+  background: rgba(6, 10, 28, 0.7);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+}
+#annotatedImageLink {
+  border-style: solid;
+}
+
+/* styled file picker */
+#photoInput {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--dim);
+}
+#photoInput::file-selector-button {
+  margin-right: 12px;
+  padding: 9px 18px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--star);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+#photoInput::file-selector-button:hover {
+  background: var(--ion-soft);
+  border-color: var(--ion);
+}
+
 .submit_button {
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid #ccc;
-    background: white;
-    font-size: 13px;
-    cursor: pointer;
+  padding: 10px 28px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--space);
+  background: var(--ion);
+  border: 1px solid var(--ion);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.submit_button:hover {
+  box-shadow: 0 0 20px rgba(127, 214, 255, 0.45);
 }
 .submit_button.clicked {
-    background: #1d1d1d;
-    color: white;
-    border-color: #1d1d1d;
+  color: var(--star);
+  background: var(--nebula);
+  border-color: var(--nebula);
 }
-/* Wrapper to enforce consistent aspect ratio and clean borders for NASA apps */
+
+/* ------------------------- EXPLORE SECTION ------------------------- */
 .explore-display-wrapper {
   position: relative;
   width: 100%;
-  height: 600px; /* Adjust height based on your layout preference */
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  overflow: hidden; /* Ensures the iframe corners follow the border radius */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  background: #000; /* Dark backdrop since NASA web apps have a dark interface */
+  height: 700px; 
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 50px rgba(127, 214, 255, 0.10);
 }
-/* Make iframe fill its beautiful container smoothly */
 .explore_display {
+  display: block;
   width: 100%;
   height: 100%;
   border: none;
-  display: block;
 }
 
-
-/* ------------------------- POP-UP NOTIFICATION ------------------------- */
-/* 1. The container handles the screen positioning and stacking rules */
+/* ------------------------- POP-UP NOTIFICATIONS ------------------------- */
 #notification_container {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  display: flex;
-  flex-direction: column-reverse; /* Stacks new ones below old ones */
-  gap: 12px;                      /* Clean spacing between active stacked elements */
   z-index: 9999;
-  pointer-events: none;           /* Prevents the invisible container from blocking page clicks */
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  pointer-events: none;
 }
-
-/* 2. Individual notification default layout rules */
 .notification {
-  display: none; 
+  display: none;
   align-items: center;
-  gap: 16px;
-  background-color: #ffffff;
-  color: #1a1a1a;
-  padding: 16px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  font-family: system-ui, -apple-system, sans-serif;
+  gap: 14px;
   max-width: 400px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  pointer-events: auto;           /* Re-enables clicking inside the pop-up itself */
+  padding: 14px 18px;
+  color: var(--star);
+  font-family: var(--font-body);
+  background: rgba(13, 19, 48, 0.92);
+  border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--ion);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(127, 214, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: auto;
 }
-
-/* 3. Turns display on and runs smooth entry slide */
 .notification.show {
   display: flex;
   animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
 @keyframes slideInUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
-
-/* Alert icon styling */
 .notification > img {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
+  /* works on dark or light icons: turns them cyan-ish */
+  filter: invert(1) brightness(1.1);
 }
-
-/* Text message styling */
 .notification p {
   margin: 0;
+  padding-right: 6px;
   font-size: 14px;
-  line-height: 1.5;
   font-weight: 500;
-  padding-right: 8px;
+  line-height: 1.5;
 }
-
-/* Close button container */
 .notification__close {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  align-self: flex-start;
   padding: 4px;
   border-radius: 6px;
+  cursor: pointer;
   transition: background-color 0.2s ease;
-  align-self: flex-start;
 }
-
-/* Close button hover state */
 .notification__close:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.1);
 }
-
-/* Close icon image styling */
 .notification__close img {
   width: 16px;
   height: 16px;
   opacity: 0.6;
+  filter: invert(1);
   transition: opacity 0.2s ease;
 }
-
 .notification__close:hover img {
   opacity: 1;
+}
+
+/* ------------------------- RESPONSIVE ------------------------- */
+@media (max-width: 600px) {
+  body { padding: 1rem 1rem 3rem; }
+  .main_title { padding: 2.5rem 0 1.75rem; }
+  .main_title { --orbit-h: 70px; }
+  .main-buttons,
+  .main-buttons.active { padding: 8px 16px; }
+  .search-bar { flex-direction: column; }
+  .explore-display-wrapper { height: 440px; }
+  #notification_container { left: 16px; right: 16px; bottom: 16px; }
+  .notification { max-width: none; }
+}
+
+/* ------------------------- REDUCED MOTION ------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .main_title { --orbit-half-time: 10s; }   /* much slower, but still moving */
 }

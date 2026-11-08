@@ -1,4 +1,61 @@
-// This is v_0_0_3
+// This is v_0_0_4
+
+// ============================ Twinkle Star Background ============================
+(function makeSky() {
+    const sky = document.createElement('div');
+    sky.id = 'sky';
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const colors = ['#ffffff', '#ffffff', '#cfe3ff', '#a9d4ff', '#ffe8d1'];
+    const count = Math.min(300, Math.round(innerWidth * innerHeight / 5500)); 
+
+    const SPEED = 3; // 2 = twice as fast, 0.5 half speed
+    
+    for (let i = 0; i < count; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+
+        const bright = Math.random() < 0.15;
+        const size = bright ? 3.5 + Math.random() * 2 : 1.5 + Math.random() * 1.5;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const glow = bright ? 14 : 5;
+        const lo = Math.random() * 0.06;
+
+        star.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        width: ${size}px;
+        height: ${size}px;
+        background: ${color};
+        box-shadow: 0 0 ${glow}px ${color};
+        opacity: ${lo};
+        `;
+
+        // Normal: fast fade plus size pulse.
+        // Reduced motion: slow, gentle fade only (no scaling).
+        const half = reduceMotion ? (4000 + Math.random() * 5000) / SPEED
+                                  : (800 + Math.random() * 2200) / SPEED;
+        const frames = reduceMotion
+          ? [{ opacity: 0.1 }, { opacity: 0.9 }]
+          : [{ opacity: lo, transform: 'scale(0.5)' },
+             { opacity: 1,  transform: 'scale(1.5)' }];
+
+        star.animate(frames, {
+          duration: half,
+          delay: -Math.random() * half * 2,
+          iterations: Infinity,
+          direction: 'alternate',
+          easing: 'ease-in-out'
+        });
+
+        sky.appendChild(star);
+    }
+
+    document.body.prepend(sky);
+    console.log('Sky v_0_0_7:', count, 'stars | reduceMotion =', reduceMotion,
+                  '| running animations =', document.getAnimations().length);
+})();
+
 
 // ============================ MENU BUTTONS ============================
 const menu_buttons = document.getElementById("menu_buttons");
@@ -86,10 +143,16 @@ user_input_button.addEventListener("click", async (e) => {
         annotatedImageLink.hidden = false;
         console.log(data);
     }
-    await InputToServer();
 
-    // Pop up a notification to inform the user that they can view the annotated image after the server has finished processing
-    triggerNotificationFinished();
+    try {
+        await InputToServer();
+        // Pop up a notification to inform the user that they can view the annotated image after the server has finished processing
+        triggerNotificationFinished();
+    } catch (err) {
+        console.error("Error during plate solving:", err);
+        notification_explore.classList.remove("show");
+        alert(err.message);
+    }
 });
 // ==================================================================
 
@@ -118,6 +181,7 @@ const explore_option_display_list = [
     "https://eyes.nasa.gov/apps/dsn-now/dsn.html"
 ];
 
+
 option_buttons.addEventListener("click", async (e) => {
     // Use event delegation to handle clicks on any of the filter buttons
     const button = e.target.closest(".chip");
@@ -125,10 +189,11 @@ option_buttons.addEventListener("click", async (e) => {
     if (!button) return;
 
     // Remove the "active" class from all buttons, then add it to the clicked button
-    document.querySelectorAll(".chip").forEach((chip) => {
+    option_buttons.querySelectorAll(".chip").forEach((chip) => {
         // Remove the "active" class from each chip
         chip.classList.remove("active");
     });
+
     // Add the "active" class to the clicked button
     button.classList.add("active");
 
@@ -173,6 +238,7 @@ async function loadAllObjects() {
     renderCards(masterObjects);
 }
 
+
 filter_options.addEventListener("click", async (e) => {
     // Use event delegation to handle clicks on any of the filter buttons
     const button = e.target.closest(".chip");
@@ -180,10 +246,11 @@ filter_options.addEventListener("click", async (e) => {
     if (!button) return;
 
     // Remove the "active" class from all buttons, then add it to the clicked button
-    document.querySelectorAll(".chip").forEach((chip) => {
+    filter_options.querySelectorAll(".chip").forEach((chip) => {
         // Remove the "active" class from each chip
         chip.classList.remove("active");
     });
+
     // Add the "active" class to the clicked button
     button.classList.add("active");
 

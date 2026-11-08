@@ -6,13 +6,16 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 const Database = require("better-sqlite3");
+const envPath = path.join(__dirname, ".env");
 
-process.loadEnvFile(path.join(__dirname, ".env"));
+if (fs.existsSync(envPath)) {
+    process.loadEnvFile(envPath);
+}
 
 // ============================================================
 // Config
 // ============================================================
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const MAX_UPLOAD_BYTES = 40 * 1024 * 1024; // 40 MB
 
 const ASTROMETRY_API = "https://nova.astrometry.net";

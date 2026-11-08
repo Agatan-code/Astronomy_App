@@ -1,5 +1,5 @@
 // This is v_0_0_4
-
+alert("Hello World!");
 // ============================ Twinkle Star Background ============================
 (function makeSky() {
     const sky = document.createElement('div');

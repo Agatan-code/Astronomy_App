@@ -19,6 +19,28 @@
 
     <body>
 
+        <div id="notification_container"> 
+
+            <div id="notification_explore" class="notification">
+                <img src="photos/exclamation.png">
+                <p>Explore Astronomical Objects While You Wait For Your Submission</p>
+                
+                <div id="close_explore" class="notification__close">
+                    <img src="photos/close.png" alt="Close">
+                </div>
+            </div>
+
+            <div id="notification_finished" class="notification">
+                <img src="photos/exclamation.png">
+                <p>Your Submission is Complete, Check the Result in the IMPORT Section</p>
+                
+                <div id="close_finished" class="notification__close">
+                    <img src="photos/close.png" alt="Close">
+                </div>
+            </div>
+            
+        </div>
+
         <header class="main_title">
             <h1 class="title">THE ASTRONOMY APP</h1>
         </header>
@@ -27,6 +49,7 @@
         <div id="menu_buttons">
             <button type="button" id="display_button" class="main-buttons active" data-type="display">Display</button>
             <button type="button" id="import_button" class="main-buttons" data-type="import">Import</button>
+            <button type="button" id="explore_button" class="main-buttons" data-type="explore">Explore</button>
         </div>
 
 
@@ -100,6 +123,23 @@
                     
                 </div>
 
+            </div>
+        </div>
+
+        <div id="explore" class="explore" hidden>
+
+            <br>
+            <div class="filters" id="options">
+                <button class="chip active" data-type="milky_way">Milky Way Galaxy</button>
+                <button class="chip" data-type="solar_system">Solar System</button>
+                <button class="chip" data-type="asteroids">Asteroids</button>
+                <button class="chip" data-type="mars">Mars</button>
+                <button class="chip" data-type="earth">Earth</button>
+                <button class="chip" data-type="dsn">Deep Space Network</button>
+            </div>
+
+            <div class="explore-display-wrapper">
+                <iframe id="explore_option_display" class="explore_display" src="https://eyes.nasa.gov/apps/exo/" title="explore_option"></iframe>
             </div>
 
         </div>

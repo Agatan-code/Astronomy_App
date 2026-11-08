@@ -113,3 +113,113 @@
     color: white;
     border-color: #1d1d1d;
 }
+/* Wrapper to enforce consistent aspect ratio and clean borders for NASA apps */
+.explore-display-wrapper {
+  position: relative;
+  width: 100%;
+  height: 600px; /* Adjust height based on your layout preference */
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden; /* Ensures the iframe corners follow the border radius */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: #000; /* Dark backdrop since NASA web apps have a dark interface */
+}
+/* Make iframe fill its beautiful container smoothly */
+.explore_display {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+
+/* ------------------------- POP-UP NOTIFICATION ------------------------- */
+/* 1. The container handles the screen positioning and stacking rules */
+#notification_container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column-reverse; /* Stacks new ones below old ones */
+  gap: 12px;                      /* Clean spacing between active stacked elements */
+  z-index: 9999;
+  pointer-events: none;           /* Prevents the invisible container from blocking page clicks */
+}
+
+/* 2. Individual notification default layout rules */
+.notification {
+  display: none; 
+  align-items: center;
+  gap: 16px;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 400px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  pointer-events: auto;           /* Re-enables clicking inside the pop-up itself */
+}
+
+/* 3. Turns display on and runs smooth entry slide */
+.notification.show {
+  display: flex;
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Alert icon styling */
+.notification > img {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* Text message styling */
+.notification p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+  padding-right: 8px;
+}
+
+/* Close button container */
+.notification__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+}
+
+/* Close button hover state */
+.notification__close:hover {
+  background-color: #f0f0f0;
+}
+
+/* Close icon image styling */
+.notification__close img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.notification__close:hover img {
+  opacity: 1;
+}

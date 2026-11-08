@@ -3,14 +3,21 @@
 // ============================ MENU BUTTONS ============================
 const menu_buttons = document.getElementById("menu_buttons");
 
-menu_buttons.addEventListener("click", async (e) => {
+// Handle actual clicks
+menu_buttons.addEventListener("click", (e) => {
     const button = e.target.closest(".main-buttons");
     if (!button) return;
 
-    document.querySelectorAll(".main-buttons").forEach((button) => {
-        button.classList.remove("active");
+    selectMenu(button);
+});
 
-        const menu_type = button.dataset.type;
+function selectMenu(button) {
+    if (!button) return;
+
+    document.querySelectorAll(".main-buttons").forEach((btn) => {
+        btn.classList.remove("active");
+
+        const menu_type = btn.dataset.type;
         document.getElementById(menu_type).setAttribute("hidden", "true");
     });
 
@@ -18,13 +25,34 @@ menu_buttons.addEventListener("click", async (e) => {
 
     const menu_type = button.dataset.type;
     document.getElementById(menu_type).removeAttribute("hidden");
-});
+}
 
 
 
 // =========================== IMPORT =============================
 const user_input = document.getElementById("photoInput");
 const annotatedImageLink = document.getElementById("annotatedImageLink");
+const explore_button = document.getElementById("explore_button");
+const notification_explore = document.getElementById("notification_explore");
+const notification_finished = document.getElementById("notification_finished");
+const close_explore = document.getElementById("close_explore");
+const close_finished = document.getElementById("close_finished");
+
+function triggerNotificationExplore() {
+    notification_explore.classList.add("show");
+}
+
+function triggerNotificationFinished() {
+    notification_finished.classList.add("show");
+}
+
+close_explore.addEventListener("click", () => {
+    notification_explore.classList.remove("show");
+});
+
+close_finished.addEventListener("click", () => {
+    notification_finished.classList.remove("show");
+});
 
 user_input_button.addEventListener("click", async (e) => {
     const input = user_input.files[0];
@@ -32,6 +60,13 @@ user_input_button.addEventListener("click", async (e) => {
     if (!input) return;
 
     console.log("User input file:", input);
+
+    // Switch to the Explore menu after the user submits an image
+    selectMenu(explore_button);
+    
+    // Pop up a notification to inform the user that they can explore while waiting for the submission
+    triggerNotificationExplore();
+
 
     async function InputToServer() {
         const formData = new FormData();
@@ -52,7 +87,65 @@ user_input_button.addEventListener("click", async (e) => {
         console.log(data);
     }
     await InputToServer();
+
+    // Pop up a notification to inform the user that they can view the annotated image after the server has finished processing
+    triggerNotificationFinished();
 });
+// ==================================================================
+
+
+
+
+// =========================== Explore =============================
+let currentOption = "milky_way";
+
+const option_buttons = document.getElementById("options");
+const explore_option_display = document.getElementById("explore_option_display");
+const explore_option_list = [
+    "milky_way",
+    "solar_system",
+    "asteroids",
+    "mars",
+    "earth",
+    "dsn"
+];
+const explore_option_display_list = [
+    "https://eyes.nasa.gov/apps/exo/",
+    "https://eyes.nasa.gov/apps/solar-system/#/home",
+    "https://eyes.nasa.gov/apps/asteroids/#/home",
+    "https://eyes.nasa.gov/apps/mrn/#/mars",
+    "https://eyes.nasa.gov/apps/earth/#/",
+    "https://eyes.nasa.gov/apps/dsn-now/dsn.html"
+];
+
+option_buttons.addEventListener("click", async (e) => {
+    // Use event delegation to handle clicks on any of the filter buttons
+    const button = e.target.closest(".chip");
+    // If the click wasn't on a button, do nothing
+    if (!button) return;
+
+    // Remove the "active" class from all buttons, then add it to the clicked button
+    document.querySelectorAll(".chip").forEach((chip) => {
+        // Remove the "active" class from each chip
+        chip.classList.remove("active");
+    });
+    // Add the "active" class to the clicked button
+    button.classList.add("active");
+
+    // Update the current type
+    currentOption = button.dataset.type;
+    // After changing the currentOption, show the selected option
+    showOption();
+});
+
+function showOption() {
+    for (let i = 0; i < explore_option_list.length; i++) {
+        if (currentOption === explore_option_list[i]) {
+            explore_option_display.src = explore_option_display_list[i];
+        }
+    }
+}
+// =================================================================
 
 
 
@@ -187,3 +280,4 @@ cardGrid.addEventListener("click", (e) => {
 });
 
 loadAllObjects();
+// ===================================================================

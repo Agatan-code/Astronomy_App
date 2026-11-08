@@ -1,6 +1,7 @@
 # Astronomy_App
 
 This app allows users to view different celestial objects and their related information. Additionally, it enables the users to import images of the night sky into the app, to build on its database.
+You could click on the following website to see how the App looks: https://astronomy-app-kl35.onrender.com/
 
 ======================== Set up ========================
 

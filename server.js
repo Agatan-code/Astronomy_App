@@ -19,17 +19,30 @@ const PORT = process.env.PORT || 3000;
 const MAX_UPLOAD_BYTES = 40 * 1024 * 1024; // 40 MB
 
 const ASTROMETRY_API = "https://nova.astrometry.net";
-const ASTROMETRY_API_KEY = process.env.ASTROMETRY_API_KEY;
+// Any of these that are set in .env get used. Add more by extending the list.
+const ASTROMETRY_API_KEYS = [
+    process.env.ASTROMETRY_API_KEY_1,
+    process.env.ASTROMETRY_API_KEY_2,
+    process.env.ASTROMETRY_API_KEY_3,
+    process.env.ASTROMETRY_API_KEY_4,
+].filter(Boolean);   // drops any that are missing or empty
 const POLL_INTERVAL_MS = 2000;
 const MAX_SOLVE_WAIT_MS = 60 * 60 * 1000; // give up on a single job after 10 minutes
 
 // Set SAVE_DEBUG_UPLOADS=true in .env to keep a copy of every uploaded image on disk.
 const SAVE_DEBUG_UPLOADS = process.env.SAVE_DEBUG_UPLOADS === "true";
 
-if (!ASTROMETRY_API_KEY) {
-    console.error("Missing ASTROMETRY_API_KEY in .env");
+// Returns a random key each time it's called.
+function getRandomApiKey() {
+    return ASTROMETRY_API_KEYS[Math.floor(Math.random() * ASTROMETRY_API_KEYS.length)];
+}
+
+// Checking for missing keys here rather than later avoids a long wait for Astrometry to time out.
+if (ASTROMETRY_API_KEYS.length === 0) {
+    console.error("Missing ASTROMETRY_API_KEYS in .env");
     process.exit(1);
 }
+console.log(`Loaded ${ASTROMETRY_API_KEYS.length} Astrometry API key(s)`);
 
 // Strategies tried in order. We only move to the next one if Astrometry
 // reports that the solve itself failed (not on network/upload errors).
@@ -115,11 +128,13 @@ async function astrometryFetch(endpoint, options = {}, retries = 3) {
 
 // Log in with the API key and return a session key.
 async function login() {
+    const apikey = getRandomApiKey();
+
     const data = await astrometryFetch("api/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
-            "request-json": JSON.stringify({ apikey: ASTROMETRY_API_KEY }),
+            "request-json": JSON.stringify({ apikey }),
         }),
     });
     if (data.status !== "success") throw new Error("Astrometry login failed");

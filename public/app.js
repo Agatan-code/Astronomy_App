@@ -1,4 +1,4 @@
-// This is v_0_0_4
+// This is v_0_0_5
 
 // ============================ Twinkle Star Background ============================
 (function makeSky() {
@@ -52,7 +52,7 @@
     }
 
     document.body.prepend(sky);
-    console.log('Sky v_0_0_7:', count, 'stars | reduceMotion =', reduceMotion,
+    console.log('Sky:', count, 'stars | reduceMotion =', reduceMotion,
                   '| running animations =', document.getAnimations().length);
 })();
 

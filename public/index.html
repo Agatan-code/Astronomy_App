@@ -106,6 +106,7 @@
                                 reader.onload = function(e) {
                                     photoPlaceholder.src = e.target.result;
                                 }
+                                annotatedImageLink.hidden = true; // Hide the annotated image link when a new image is selected
                                 reader.readAsDataURL(file);
                             }
                         });
